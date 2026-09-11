@@ -55,12 +55,12 @@ void gamepad_run_calibration(void) {
         sleep_ms(100);
     }
 
-    // 2. ЕТАП: 2 секунди — встановлення нуля (індикація жовтим)
+    // 2. ЕТАП: 3 секунди — встановлення нуля (індикація жовтим)
     rgb_led_set_color(40, 40, 0); // Жовтий
     
     uint32_t center_sums[4] = {0, 0, 0, 0};
     uint32_t samples = 0;
-    absolute_time_t end_time = make_timeout_time_ms(2000);
+    absolute_time_t end_time = make_timeout_time_ms(3000);
 
     while (get_absolute_time() < end_time) {
         for (uint8_t ch = 0; ch < 4; ch++) {
@@ -68,7 +68,7 @@ void gamepad_run_calibration(void) {
             center_sums[ch] += adc_read();
         }
         samples++;
-        sleep_ms(2);
+        sleep_ms(3);
     }
     
     // Розраховуємо середнє значення для центрів
@@ -79,9 +79,9 @@ void gamepad_run_calibration(void) {
         calib_ram.max_val[ch] = calib_ram.center[ch];
     }
 
-    // 3. ЕТАП: 5 секунд — обертання стиків (індикація фіолетовим/пурпуровим)
+    // 3. ЕТАП: 6 секунд — обертання стиків (індикація фіолетовим/пурпуровим)
     rgb_led_set_color(40, 0, 40); // Пурпуровий
-    end_time = make_timeout_time_ms(5000);
+    end_time = make_timeout_time_ms(6000);
 
     while (get_absolute_time() < end_time) {
         for (uint8_t ch = 0; ch < 4; ch++) {
