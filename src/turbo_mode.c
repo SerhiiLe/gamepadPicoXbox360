@@ -17,6 +17,7 @@ static bool combo_ready = true;
 static uint64_t back_press_start_us = 0;
 static uint64_t start_press_start_us = 0;
 static uint64_t combo_release_guard_us = 0;
+static uint64_t combo_hold_guard_us = 0;
 
 void gamepad_turbo_process(XInputReport* report, bool* override_led, uint32_t* led_out) {
     uint64_t now_us = time_us_64();
@@ -29,6 +30,18 @@ void gamepad_turbo_process(XInputReport* report, bool* override_led, uint32_t* l
             report->start = 0;
         } else {
             combo_release_guard_us = 0; // Час післякомбінаційного захисту вийшов
+        }
+    }
+
+    // імітувати утримання обох клавіш призначення режиму turbo
+    if (combo_hold_guard_us != 0) {
+        if (now_us - combo_hold_guard_us < COMBO_DELAY_US*2) {
+            if (report->back || report->start) {
+                report->back = 1;
+                report->start = 1;
+            }
+        } else {
+            combo_hold_guard_us = 0;
         }
     }
 
@@ -46,19 +59,22 @@ void gamepad_turbo_process(XInputReport* report, bool* override_led, uint32_t* l
         report->back = 0;
         report->start = 0;
         combo_release_guard_us = now_us; // Ставимо мітку захисту відпускання
+        combo_hold_guard_us = now_us;
 
         if (combo_ready) {
+            bool combo_dir = true;
             // Перевіряємо, яку саме кнопку дії натиснув користувач разом із комбінацією, і інвертуємо її режим
-            if (report->button_a)     { turbo_a = !turbo_a;   combo_ready = false; }
-            if (report->button_b)     { turbo_b = !turbo_b;   combo_ready = false; }
-            if (report->button_x)     { turbo_x = !turbo_x;   combo_ready = false; }
-            if (report->button_y)     { turbo_y = !turbo_y;   combo_ready = false; }
-            if (report->left_bumper)  { turbo_lb = !turbo_lb; combo_ready = false; }
-            if (report->right_bumper) { turbo_rb = !turbo_rb; combo_ready = false; }
+            if (report->button_a)     { turbo_a = !turbo_a;   combo_ready = false; combo_dir = turbo_a; }
+            if (report->button_b)     { turbo_b = !turbo_b;   combo_ready = false; combo_dir = turbo_b; }
+            if (report->button_x)     { turbo_x = !turbo_x;   combo_ready = false; combo_dir = turbo_x; }
+            if (report->button_y)     { turbo_y = !turbo_y;   combo_ready = false; combo_dir = turbo_y; }
+            if (report->left_bumper)  { turbo_lb = !turbo_lb; combo_ready = false; combo_dir = turbo_lb; }
+            if (report->right_bumper) { turbo_rb = !turbo_rb; combo_ready = false; combo_dir = turbo_rb; }
 
             if (!combo_ready) {
-                // Спалах для підтвердження налаштування
-                rgb_led_set_color(60, 60, 60);
+                // Спалах для підтвердження налаштування та захист від брязкоту
+                if (combo_dir) rgb_led_set_color(120, 0, 0);
+                else rgb_led_set_color(0, 0, 120);
                 sleep_ms(150);
             }
         }
@@ -84,6 +100,19 @@ void gamepad_turbo_process(XInputReport* report, bool* override_led, uint32_t* l
                 }
             }
         }
+    }
+
+    // якщо активовано режим призначення кнопок turbo, то пригнічуємо кнопки
+    if (combo_hold_guard_us != 0) {
+        report->button_a = 0;
+        report->button_b = 0;
+        report->button_x = 0;
+        report->button_y = 0;
+        report->left_bumper = 0;
+        report->right_bumper = 0;
+        *led_out = rgb_led_color_pack(5, 5, 5);
+        *override_led = true;
+        return;
     }
 
     // --- ГЕНЕРАЦІЯ КЛІКІВ ТА ПЛАВНОЇ ІНДИКАЦІЇ ---

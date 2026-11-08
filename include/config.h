@@ -48,7 +48,7 @@
 #define EMA_ALPHA           0.25f
 
 // Analog Stick Deadzone percentage (0..100)
-#define DEADZONE_PERCENT 5
+#define DEADZONE_PERCENT 2.5f
 
 // ADC Resolution (RP2040 uses 12-bit ADC: 0..4095)
 #define ADC_MIN_VALUE       18

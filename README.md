@@ -35,7 +35,7 @@ The gamepad should work immediately upon connection. However, there are two addi
 
 - **Calibration Mode:** If the "Center" button is held down while connecting the gamepad, it enters calibration mode, indicated by the LED flashing. First, the stick centers are determined over a two-second period; do not touch the sticks during this time. Next, the color changes, and you must move both sticks to their maximum extent to determine their actual range of motion. Afterward, the LED flashes again to confirm the settings have been saved. This procedure only needs to be performed once, or if the sticks start behaving erratically.
 
-- **"Turbo" Mode:** While the gamepad is active, press and hold the "Back" and "Menu" buttons simultaneously. Without releasing them, press the button you wish to set to turbo mode. The LED will flash to confirm the button has been registered. You can enable turbo mode for six buttons: A, B, X, Y, LB, and RB. Repeat the procedure to cancel the setting. Turbo mode resets when the gamepad is turned off.
+- **"Turbo" Mode:** While the gamepad is active, press and hold the "Back" and "Menu" buttons simultaneously. Then, while continuing to hold down at least one of these buttons, press the button you wish to set to "Turbo" mode. The LED will flash red, indicating that the button has been registered. You can set up to 6 buttons—A, B, X, Y, LB, and RB—for this feature. To cancel, repeat the same procedure; the LED will flash blue. The "Turbo" mode is reset whenever the controller is turned off.
 
 ## Assembly
 
@@ -140,7 +140,7 @@ You can change pin assignments and other parameters in the `include/config.h` fi
 
 - **Калибровка**. Если при подключении нажата клавиша "Center", то геймпад перейдёт в режим калибровка, о чем поморгает светодиод. Сначала две секунды определяются центры стиков. В это время их трогать нельзя. Затем цвет изменится и надо максимально отклонять оба стика, чтобы определить реальный диапазон. После этого светодиод ещё раз поморгает и сохранит настройку. Процедуру надо проводить только один раз или если со стиками начали происходить странности.
 
-- **Режим "Turbo"**. Во время работы надо одновременно нажать "Back" и "Menu". После этого, не отпуская эти две клавиши, нажать ту клавишу, которую надо ускорить. Светодиод моргнёт, значит клавиша запомнена. Так можно ускорить 6 клавиш - A, B, X, Y, LB, RB. Для отмены надо повторить процедуру. При выключении геймпада режим "Turbo" сбрасывается.
+- **Режим "Turbo"**. Во время работы надо одновременно нажать "Back" и "Menu". После этого, не отпуская хотя бы одну из этих клавиши, нажать ту клавишу, которую надо ускорить. Светодиод моргнёт красным, значит клавиша запомнена. Так можно ускорить 6 клавиш - A, B, X, Y, LB, RB. Для отмены надо повторить процедуру, при этом светодиод моргнёт синим. При выключении геймпада режим "Turbo" сбрасывается.
 
 ## Сборка
 
