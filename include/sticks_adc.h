@@ -2,7 +2,6 @@
 #define STICKS_ADC_H
 
 #include <stdint.h>
-#include "config.h"
 
 // Структура для збереження «сирих» або вже масштабованих осей
 typedef struct {

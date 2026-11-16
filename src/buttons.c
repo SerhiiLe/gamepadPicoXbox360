@@ -1,16 +1,12 @@
+// Зчитування кнопок та імітація аналогових курків
+
+#include <hardware/gpio.h>
+#include "config.h"
 #include "buttons.h"
-#include "hardware/gpio.h"
-#include "pico/stdlib.h"
 
 // Статичні змінні для збереження поточного плавного значення курків (0.0 ... 255.0)
 static float current_lt = 0.0f;
 static float current_rt = 0.0f;
-
-// 🔥 НАЛАШТУВАННЯ ШВИДКОСТІ НАТИСКАННЯ:
-// Чим більша швидкість, тим швидше курок дотискається до максимуму.
-// Значення 15.0f означає, що від 0 до 255 курок пройде приблизно за 70-80 мс.
-#define TRIGGER_SPEED_PRESS   15.0f 
-#define TRIGGER_SPEED_RELEASE 20.0f // Назад курок зазвичай повертається швидше (пружина)
 
 // Список усіх використаних пінів для швидкої ініціалізації в циклі
 static const uint8_t button_pins[] = {

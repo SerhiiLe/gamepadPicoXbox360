@@ -1,13 +1,18 @@
-#include "pico/stdlib.h"
-#include "xinput_device.h"
+// Імітація Gamepad Xbox 360 для PC та Android. З реальними консолями працювати не буде тому, що немає сертификата.
+
+#include <hardware/gpio.h>
+#include <pico/time.h>
+#include <string.h>
+
+#include "xinput_device.h" // драйвер usb xinput
 #include "rgb_led.h" // Підключаємо наш RGB драйвер
 #include "sticks_adc.h" // Підключаємо наш АЦП-модуль
 #include "buttons.h" // Підключаємо модуль кнопок
 #include "rumble_pwm.h" // Обробка вібрації rumble
 #include "sticks_calib.h" // Калібрування
 #include "turbo_mode.h" // Турбо
+#include "status_led.h" // Визначення кольорів статусу
 
-#include <string.h>
 
 int main() {
     // Ініціалізація RGB світлодіода
@@ -48,11 +53,9 @@ int main() {
     absolute_time_t last_blink_time = get_absolute_time();
     absolute_time_t last_report_time = get_absolute_time();
     bool button_state = false;
-
-    uint8_t last_player_status = 0xFF;
     
     while (1) {
-        // Обслуговування USB завдань (і прийом вібрації)
+        // Обслуговування USB завдань (і отримання вібрації)
         xinput_tasks();
 
         active_color = current_color;
@@ -66,34 +69,7 @@ int main() {
 
         absolute_time_t now = get_absolute_time();
 
-        // 1. Оновлюємо колір світлодіода за статусом від ПК
-        // Перевіряємо статус гравця від ПК
-        uint8_t current_player = xinput_get_led_status();
-
-        // Якщо статус змінився, оновлюємо колір світлодіода
-        if (current_player != last_player_status) {
-            last_player_status = current_player;
-
-            switch(current_player) {
-                case 0x02: // 1-й гравець
-                    current_color = rgb_led_color_pack(0, 20, 0); // Зелений
-                    break;
-                case 0x03: // 2-й гравець
-                    current_color = rgb_led_color_pack(20, 0, 0); // Червоний
-                    break;
-                case 0x04: // 3-й гравець
-                    current_color = rgb_led_color_pack(0, 0, 20); // Синій
-                    break;
-                case 0x05: // 4-й гравець
-                    current_color = rgb_led_color_pack(15, 15, 0); // Жовтий
-                    break;
-                default:   // Очікування підключення
-                    current_color = rgb_led_color_pack(20, 20, 20); // Тьмяний білий
-                    break;
-            }
-        }
-
-        // 2. Відправка ігрового звіту на ПК кожні 4 мс (Частота 250 Гц)
+        // Відправна ігрового звіту на ПК кожні 4 мс (Частота 250 Гц)
         if (absolute_time_diff_us(last_report_time, now) >= 4000) {
             last_report_time = now;
 
@@ -109,7 +85,7 @@ int main() {
             report_data.thumb_rx = current_axes.rx;
             report_data.thumb_ry = current_axes.ry;
 
-            // 3. Читання фізичних кнопок та імітація курків LT/RT
+            // Читання фізичних кнопок та імітація курків LT/RT
             gamepad_buttons_read(&report_data);
 
             // Змінні перехоплення індикації для режиму Турбо
@@ -121,11 +97,15 @@ int main() {
 
             xinput_send_report(&report_data);
 
+            // Оновлюємо колір світлодіода за статусом від ПК
+            // Перевіряємо статус гравця від ПК
+            uint8_t current_led_status = xinput_get_led_status();
+            current_color = current_led_status_color(current_led_status);
+
             // Логіка світлодіода (Турбо має вищий пріоритет за колір номера гравця)
             if (turbo_led_active) {
                 // turbo имеет максимальный приоритет
                 active_color = turbo_led; // Швидке блимання при автокліках
-                last_player_status = 0xFF; // Скидаємо збережений статус, щоб колір гравця повернувся, коли відпустимо кнопку
             } else if ( vibe_left || vibe_right ) {
                 // rumble имеет приоритет ниже
                 active_color = ((uint32_t)(vibe_left) << 16) | (uint32_t)(vibe_right);

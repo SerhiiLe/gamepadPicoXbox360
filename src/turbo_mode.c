@@ -1,6 +1,9 @@
+// Фільтр клавіш для конфігурування режиму Turbo та імітації натискань в цьому режимі.
+
+#include <hardware/timer.h>
+#include <pico/time.h>
 #include "turbo_mode.h"
 #include "config.h"
-#include "pico/stdlib.h"
 #include "rgb_led.h"
 
 // Флаги активності режиму Турбо для кожної конкретної кнопки
@@ -29,7 +32,7 @@ void gamepad_turbo_process(XInputReport* report, bool* override_led, uint32_t* l
             report->back = 0;
             report->start = 0;
         } else {
-            combo_release_guard_us = 0; // Час післякомбінаційного захисту вийшов
+            combo_release_guard_us = 0; // Час захисту комбінації сплинув
         }
     }
 

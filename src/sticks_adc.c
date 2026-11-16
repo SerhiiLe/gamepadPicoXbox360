@@ -1,6 +1,9 @@
+// Зчитування аналогових стіків
+
+#include <hardware/adc.h>
+#include "config.h"
 #include "sticks_adc.h"
 #include "sticks_filter.h"
-#include "hardware/adc.h"
 
 void gamepad_adc_init(void) {
     adc_init();

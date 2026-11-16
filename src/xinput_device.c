@@ -1,7 +1,9 @@
+// Низькорівневий драйвер протоколу XInput
+
 #include "xinput_device.h"
-#include "tusb.h"
-#include "device/usbd_pvt.h"
-#include "pico/unique_id.h"
+#include <tusb.h>
+#include <device/usbd_pvt.h>
+#include <pico/unique_id.h>
 #include <string.h>
 
 #define USBD_VID     0x045E 
@@ -100,7 +102,7 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
 static void xinput_driver_init(void) {}
 static void xinput_driver_reset(uint8_t rhport) {
     (void) rhport;
-    led_player_status = 0;
+    led_player_status = 0x0F;
     rumble_left = 0;
     rumble_right = 0;
 }
@@ -123,7 +125,7 @@ static uint16_t xinput_driver_open(uint8_t rhport, tusb_desc_interface_t const *
             p_desc += p_desc[0];
         }
 
-        // Одразу змикаємо буфер прийому OUT-підключення (0x02),
+        // Одразу змикаємо буфер отримання OUT-підключення (0x02),
         // щоб RP2040 був готовий відповісти ACK на первинний magic packet xpad ({0x01, 0x03, 0x00})
         usbd_edpt_xfer(rhport, EPNUM_XINPUT_OUT, xinput_out_buffer, sizeof(xinput_out_buffer), false);
 

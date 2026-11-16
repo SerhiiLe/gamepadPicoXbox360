@@ -1,6 +1,10 @@
-#include "rumble_pwm.h"
-#include "hardware/pwm.h"
-#include "hardware/gpio.h"
+// Робота вібромоторів через PWM.
+// Генерація прив'язана до різних таймерів. Лівий (PIN 17) до таймеру 1, Правий (PIN 18) до таймеру 0
+
+#include <rumble_pwm.h>
+#include <hardware/pwm.h>
+#include <hardware/gpio.h>
+#include "config.h"
 
 static uint slice_left;
 static uint slice_right;

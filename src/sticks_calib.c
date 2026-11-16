@@ -1,8 +1,10 @@
+// Калібровка стіків при старті, збереження у флеш
+
+#include <hardware/flash.h>
+#include <hardware/sync.h>
+#include <hardware/adc.h>
+#include "config.h"
 #include "sticks_calib.h"
-#include "hardware/flash.h"
-#include "hardware/sync.h"
-#include "hardware/adc.h"
-// #include "pico/stdlib.h"
 #include "rgb_led.h"
 #include <string.h>
 

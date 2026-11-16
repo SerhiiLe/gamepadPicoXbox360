@@ -3,7 +3,6 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "config.h"
 
 // Структура для збереження калібрувальних значень у флеш-пам'яті
 typedef struct {

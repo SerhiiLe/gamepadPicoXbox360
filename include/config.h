@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 // WS2812 RGB LED (RP2040-Zero onboard NeoPixel)
-#define PIN_RGB_LED         16
+#define PIN_WS2812_LED  16
 
 // Rumble Motor PWM Output. Don`t change! Не міняти!
 #define PIN_MOTOR_LEFT  17 // Сильний (низькочастотний) мотор
@@ -57,5 +57,11 @@
 
 // Combo = Start + Back + target button
 #define COMBO_DELAY_US 100000 // Затримка 100 мс
+
+// 🔥 НАЛАШТУВАННЯ ШВИДКОСТІ НАТИСКАННЯ:
+// Чим більша швидкість, тим швидше курок дотискується до максимуму.
+// Значення 15.0f означає, що від 0 до 255 курок пройде приблизно за 70-80 мс. (255/15*4ms=68ms)
+#define TRIGGER_SPEED_PRESS   12.0f
+#define TRIGGER_SPEED_RELEASE 20.0f // Назад курок зазвичай повертається швидше (пружина)
 
 #endif // CONFIG_H

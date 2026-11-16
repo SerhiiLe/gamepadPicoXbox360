@@ -1,3 +1,6 @@
+// Фільтрація аналогових значень для зменшення дрижання
+
+#include "config.h"
 #include "sticks_filter.h"
 #include "sticks_calib.h"
 
