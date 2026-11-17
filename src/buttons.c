@@ -1,6 +1,9 @@
 // Зчитування кнопок та імітація аналогових курків
 
 #include <hardware/gpio.h>
+#include <pico/time.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include "config.h"
 #include "buttons.h"
 
@@ -17,41 +20,64 @@ static const uint8_t button_pins[] = {
     PIN_BTN_LT, PIN_BTN_RT
 };
 
+// Total Buttons
+#define NUM_BUTTONS (sizeof(button_pins) / sizeof(button_pins[0]))
+#define MAX_BUTTONS 30 // у rp2040 всего 30 ножек
+
+static bool debounced_state[MAX_BUTTONS];
+static int8_t lockout_counter[MAX_BUTTONS];
+
 void gamepad_buttons_init(void) {
-    uint8_t num_pins = sizeof(button_pins) / sizeof(button_pins[0]);
-    for (uint8_t i = 0; i < num_pins; i++) {
-        gpio_init(button_pins[i]);
-        gpio_set_dir(button_pins[i], GPIO_IN);
-        gpio_pull_up(button_pins[i]); // Підтяжка до 3.3V, кнопка замикає на GND
+    for (uint8_t i = 0; i < NUM_BUTTONS; i++) {
+        uint8_t pin = button_pins[i];
+        gpio_init(pin);
+        gpio_set_dir(pin, GPIO_IN);
+        gpio_pull_up(pin); // Підтяжка до 3.3V, кнопка замикає на GND
+        debounced_state[pin] = false;
+        lockout_counter[pin] = 0;
     }
 }
 
+// Чтение всех кнопок и заполнение отчёта
 void gamepad_buttons_read(XInputReport* report) {
     // Читання стандартних цифрових кнопок. !gpio_get поверне true (1), якщо пін замкнений на GND (натиснутий)
-    report->button_a = !gpio_get(PIN_BTN_A);
-    report->button_b = !gpio_get(PIN_BTN_B);
-    report->button_x = !gpio_get(PIN_BTN_X);
-    report->button_y = !gpio_get(PIN_BTN_Y);
+    for (uint8_t i=0; i < NUM_BUTTONS; i++) {
+        uint8_t pin = button_pins[i];
+        if (lockout_counter[pin] > 0) {
+            lockout_counter[pin]--; // идет слепой период
+        } else {
+            bool raw_state = !gpio_get(pin);
+            if (raw_state != debounced_state[pin]) {
+                debounced_state[pin] = raw_state; // Мгновенное срабатывание
+                lockout_counter[pin] = DEBOUNCE_LOCKOUT_TICKS; // Блокируем на 6 тиков (6 мс)
+            }
+        }
+    }
 
-    report->left_bumper  = !gpio_get(PIN_BTN_LB);
-    report->right_bumper = !gpio_get(PIN_BTN_RB);
+    report->button_a = debounced_state[PIN_BTN_A];
+    report->button_b = debounced_state[PIN_BTN_B];
+    report->button_x = debounced_state[PIN_BTN_X];
+    report->button_y = debounced_state[PIN_BTN_Y];
 
-    report->back  = !gpio_get(PIN_BTN_BACK);
-    report->start = !gpio_get(PIN_BTN_START);
-    report->guide = !gpio_get(PIN_BTN_GUIDE);
+    report->left_bumper  = debounced_state[PIN_BTN_LB];
+    report->right_bumper = debounced_state[PIN_BTN_RB];
 
-    report->left_stick_click  = !gpio_get(PIN_BTN_LS);
-    report->right_stick_click = !gpio_get(PIN_BTN_RS);
+    report->back  = debounced_state[PIN_BTN_BACK];
+    report->start = debounced_state[PIN_BTN_START];
+    report->guide = debounced_state[PIN_BTN_GUIDE];
 
-    report->dpad_up    = !gpio_get(PIN_DPAD_UP);
-    report->dpad_down  = !gpio_get(PIN_DPAD_DOWN);
-    report->dpad_left  = !gpio_get(PIN_DPAD_LEFT);
-    report->dpad_right = !gpio_get(PIN_DPAD_RIGHT);
+    report->left_stick_click  = debounced_state[PIN_BTN_LS];
+    report->right_stick_click = debounced_state[PIN_BTN_RS];
+
+    report->dpad_up    = debounced_state[PIN_DPAD_UP];
+    report->dpad_down  = debounced_state[PIN_DPAD_DOWN];
+    report->dpad_left  = debounced_state[PIN_DPAD_LEFT];
+    report->dpad_right = debounced_state[PIN_DPAD_RIGHT];
 
     // 🔥 АЛГОРИТМ ПЛАВНОГО ДОТИСКАННЯ КУРКІВ:
     
     // 1. Обробка Лівого Курка (LT)
-    if (!gpio_get(PIN_BTN_LT)) { // Кнопка натиснута
+    if (debounced_state[PIN_BTN_LT]) { // Кнопка натиснута
         current_lt += TRIGGER_SPEED_PRESS;
         if (current_lt > 255.0f) current_lt = 255.0f;
     } else { // Кнопка відпущена
@@ -61,7 +87,7 @@ void gamepad_buttons_read(XInputReport* report) {
     report->left_trigger = (uint8_t)current_lt;
 
     // 2. Обробка Правого Курка (RT)
-    if (!gpio_get(PIN_BTN_RT)) { // Кнопка натиснута
+    if (debounced_state[PIN_BTN_RT]) { // Кнопка натиснута
         current_rt += TRIGGER_SPEED_PRESS;
         if (current_rt > 255.0f) current_rt = 255.0f;
     } else { // Кнопка відпущена

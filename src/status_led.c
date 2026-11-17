@@ -96,7 +96,7 @@ uint32_t current_led_status_color(uint8_t cmd) {
 
         case 0x0C: { // Медленное дыхание белым (цикл 2000 мс)
             uint8_t br = calc_breathing_brightness(elapsed_ms, 2000);
-            color = apply_brightness_pack(30, 30, 30, br);
+            color = apply_brightness_pack(50, 50, 50, br);
             break;
         }
 

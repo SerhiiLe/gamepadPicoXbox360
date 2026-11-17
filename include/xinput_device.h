@@ -7,8 +7,7 @@
 #define EPNUM_XINPUT_IN   0x81
 #define EPNUM_XINPUT_OUT  0x02
 
-#pragma pack(push, 1)
-typedef struct {
+typedef struct __attribute__((packed)) {
     uint8_t report_id;          // 0x00
     uint8_t report_size;        // 0x14 (20 байт)
     
@@ -44,7 +43,6 @@ typedef struct {
 
     uint8_t reserved_bytes[6];
 } XInputReport;
-#pragma pack(pop)
 
 void xinput_init(void);
 void xinput_tasks(void);

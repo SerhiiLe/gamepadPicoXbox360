@@ -50,7 +50,6 @@ int main() {
     // Запускаємо USB XInput
     xinput_init();
 
-    absolute_time_t last_blink_time = get_absolute_time();
     absolute_time_t last_report_time = get_absolute_time();
     bool button_state = false;
     
@@ -70,7 +69,7 @@ int main() {
         absolute_time_t now = get_absolute_time();
 
         // Відправна ігрового звіту на ПК кожні 4 мс (Частота 250 Гц)
-        if (absolute_time_diff_us(last_report_time, now) >= 4000) {
+        if (absolute_time_diff_us(last_report_time, now) >= REPORT_INTERVAL_US) {
             last_report_time = now;
 
             // Структура для збереження поточних координат стиків

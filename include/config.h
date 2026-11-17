@@ -44,9 +44,6 @@
 #define INVERT_DIRECTION_RX     true
 #define INVERT_DIRECTION_RY     true
 
-// Exponential Moving Average (EMA) alpha factor for ADC noise filtering (0.0..1.0)
-#define EMA_ALPHA           0.25f
-
 // Analog Stick Deadzone percentage (0..100)
 #define DEADZONE_PERCENT 2.5f
 
@@ -58,10 +55,19 @@
 // Combo = Start + Back + target button
 #define COMBO_DELAY_US 100000 // Затримка 100 мс
 
+// Интервал отсылки данных. При изменении надо пересчитывать менять значения ниже
+#define REPORT_INTERVAL_US  1000 // 1000 мкс = 1 мс (1000 Гц)
+
+// сколько тиков пропускать для избежания дребезга. Если тики по 1 мс, то 6.
+#define DEBOUNCE_LOCKOUT_TICKS  6
+
+// Exponential Moving Average (EMA) alpha factor for ADC noise filtering (0.0..1.0)
+#define EMA_ALPHA           0.20f
+
 // 🔥 НАЛАШТУВАННЯ ШВИДКОСТІ НАТИСКАННЯ:
 // Чим більша швидкість, тим швидше курок дотискується до максимуму.
 // Значення 15.0f означає, що від 0 до 255 курок пройде приблизно за 70-80 мс. (255/15*4ms=68ms)
-#define TRIGGER_SPEED_PRESS   12.0f
-#define TRIGGER_SPEED_RELEASE 20.0f // Назад курок зазвичай повертається швидше (пружина)
+#define TRIGGER_SPEED_PRESS   3.0f
+#define TRIGGER_SPEED_RELEASE 5.0f // Назад курок зазвичай повертається швидше (пружина)
 
 #endif // CONFIG_H
