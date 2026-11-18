@@ -25,7 +25,7 @@ static const uint8_t button_pins[] = {
 #define MAX_BUTTONS 30 // у rp2040 всего 30 ножек
 
 static bool debounced_state[MAX_BUTTONS];
-static int8_t lockout_counter[MAX_BUTTONS];
+static int8_t lockout_counter[NUM_BUTTONS];
 
 void gamepad_buttons_init(void) {
     for (uint8_t i = 0; i < NUM_BUTTONS; i++) {
@@ -34,25 +34,29 @@ void gamepad_buttons_init(void) {
         gpio_set_dir(pin, GPIO_IN);
         gpio_pull_up(pin); // Підтяжка до 3.3V, кнопка замикає на GND
         debounced_state[pin] = false;
-        lockout_counter[pin] = 0;
+        lockout_counter[i] = 0;
     }
 }
 
 // Чтение всех кнопок и заполнение отчёта
 void gamepad_buttons_read(XInputReport* report) {
-    // Читання стандартних цифрових кнопок. !gpio_get поверне true (1), якщо пін замкнений на GND (натиснутий)
+
+    // чтение всех кнопок и отсеивание дребезга за один проход
     for (uint8_t i=0; i < NUM_BUTTONS; i++) {
         uint8_t pin = button_pins[i];
-        if (lockout_counter[pin] > 0) {
-            lockout_counter[pin]--; // идет слепой период
+        if (lockout_counter[i] > 0) {
+            lockout_counter[i]--; // идет слепой период
         } else {
+            // Читання стандартних цифрових кнопок. !gpio_get поверне true (1), якщо пін замкнений на GND (натиснутий)
             bool raw_state = !gpio_get(pin);
             if (raw_state != debounced_state[pin]) {
                 debounced_state[pin] = raw_state; // Мгновенное срабатывание
-                lockout_counter[pin] = DEBOUNCE_LOCKOUT_TICKS; // Блокируем на 6 тиков (6 мс)
+                lockout_counter[i] = DEBOUNCE_LOCKOUT_TICKS; // Блокируем на 6 тиков (6 мс)
             }
         }
     }
+    
+    // заполнение отчёта. Это структура одна кнопка - один бит, хотя выглядит как обычное присвоение
 
     report->button_a = debounced_state[PIN_BTN_A];
     report->button_b = debounced_state[PIN_BTN_B];

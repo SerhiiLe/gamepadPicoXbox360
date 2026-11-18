@@ -62,7 +62,7 @@
 #define DEBOUNCE_LOCKOUT_TICKS  6
 
 // Exponential Moving Average (EMA) alpha factor for ADC noise filtering (0.0..1.0)
-#define EMA_ALPHA           0.20f
+#define EMA_ALPHA           0.18f
 
 // 🔥 НАЛАШТУВАННЯ ШВИДКОСТІ НАТИСКАННЯ:
 // Чим більша швидкість, тим швидше курок дотискується до максимуму.
