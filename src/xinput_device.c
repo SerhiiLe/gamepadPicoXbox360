@@ -16,7 +16,7 @@ static void xinput_init_serial_number(void) {
 }
 
 CFG_TUSB_MEM_ALIGN static uint8_t xinput_out_buffer[32];
-static uint8_t led_player_status = 0;
+static uint8_t led_player_status = 0xff;
 static uint8_t rumble_left = 0;
 static uint8_t rumble_right = 0;
 
@@ -169,6 +169,7 @@ static bool xinput_driver_xfer_cb(uint8_t rhport, uint8_t ep_addr, xfer_result_t
 }
 
 uint8_t xinput_get_led_status(void) {
+    if (!tud_ready()) return 0xFF;
     return led_player_status;
 }
 

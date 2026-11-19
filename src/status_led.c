@@ -32,7 +32,7 @@ static const uint32_t player_colors[4] = {
 
 // Определение нужного цвета на основе текущего статуса
 uint32_t current_led_status_color(uint8_t cmd) {
-    static uint8_t last_cmd = 0xFF;
+    static uint8_t last_cmd = 0xFE;
     static uint8_t active_player = 0; // Индекс 0..3 (по умолчанию Игрок 1)
     static uint64_t cmd_start_us = 0;
 
@@ -107,7 +107,7 @@ uint32_t current_led_status_color(uint8_t cmd) {
         }
 
         default: { // До получения первой команды от ПК (спокойное дыхание, цикл 2500 мс)
-            uint8_t br = calc_breathing_brightness(elapsed_ms, 3000);
+            uint8_t br = calc_breathing_brightness(elapsed_ms, 4000);
             color = apply_brightness_pack(25, 25, 25, br);
             break;
         }

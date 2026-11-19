@@ -98,8 +98,7 @@ int main() {
 
             // Оновлюємо колір світлодіода за статусом від ПК
             // Перевіряємо статус гравця від ПК
-            uint8_t current_led_status = xinput_get_led_status();
-            current_color = current_led_status_color(current_led_status);
+            current_color = current_led_status_color(xinput_get_led_status());
 
             // Логіка світлодіода (Турбо має вищий пріоритет за колір номера гравця)
             if (turbo_led_active) {
