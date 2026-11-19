@@ -1,7 +1,6 @@
 // Зчитування кнопок та імітація аналогових курків
 
 #include <hardware/gpio.h>
-#include <pico/time.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include "config.h"

@@ -172,4 +172,7 @@ You can change pin assignments and other parameters in the `include/config.h` fi
 
 У меня всё выглядит так ужасно, но работает :) Нестандартное расположение клавиш продиктовано маленьким размером макетной платы. Впрочем, я бы не сказал, что играть менее удобно, чем на оригинальном Sony DualSense, за счёт компактного размера. И совместимость с играми лучше, так-как большинство игр для PC ориентированы именно под Xbox. Но я не спорю, оригинальные геймпады лучше :)
 
-![Gamepad](https://github.com/SerhiiLe/gamepadPicoXbox360/blob/main/my_gamepad.jpg)
+![Gamepad](https://github.com/SerhiiLe/gamepadPicoXbox360/blob/main/img/my_gamepad.jpg)
+![open-f](https://github.com/SerhiiLe/gamepadPicoXbox360/blob/main/img/open-f.jpg)
+![open-b](https://github.com/SerhiiLe/gamepadPicoXbox360/blob/main/img/open-b.jpg)
+![test](https://github.com/SerhiiLe/gamepadPicoXbox360/blob/main/img/test.jpg)
